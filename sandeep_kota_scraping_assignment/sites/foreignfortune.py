@@ -17,7 +17,7 @@ def scrape_product_data(product_url):
 
     try:
         title = product_soup.find('h1',class_="product-single__title").text.strip()
-        price = product_soup.find('span',id="ProductPrice-product-template").text.strip()
+        current_price = original_price = product_soup.find('span',id="ProductPrice-product-template").text.strip()
         description = product_soup.find('div',class_="product-single__description rte").text.strip()
         product_id = urlparse(product_url).path.split('/')[-1]
 
@@ -55,7 +55,8 @@ def scrape_product_data(product_url):
     product_data = {
         "title": title,
         "url": product_url,
-        "price": price,
+        "price": current_price,
+        "actual_price": original_price,
         "image": main_image,
         "description": description,
         "product_id": product_id,
