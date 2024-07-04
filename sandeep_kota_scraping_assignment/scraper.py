@@ -7,7 +7,7 @@ from sites.traderjoes import scrape_traderjoes
 # URLs to scrape
 urls = {
     "foreignfortune": "https://foreignfortune.com",
-    "lechocolat_alainducasse": "https://www.lechocolat-alainducasse.com/uk/",
+    "lechocolat_alainducasse": "https://www.lechocolat-alainducasse.com",
     "traderjoes": "https://www.traderjoes.com"
 }
 
@@ -24,7 +24,7 @@ all_products = {
 }
 
 # Save the scraped data to a JSON file
-output_file_path = "scraped_products_lechocolat_alainducasse.json"
+output_file_path = "sub_data/scraped_products_lechocolat_alainducasse.json"
 with open(output_file_path, "w") as f:
     json.dump(all_products, f, indent=4)
 
