@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import json
 
-# TODO: to be tested again
+# TODO: need to add sleep for every request
 def scrape_product_data(product_url):
     try:
         product_response = requests.get(product_url)

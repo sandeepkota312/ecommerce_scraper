@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+# TODO: need to add sleep for every request
 
 def scrape_product_data(product_url):
     try:
@@ -12,7 +13,7 @@ def scrape_product_data(product_url):
     product_soup = BeautifulSoup(product_response.text,'html.parser')
 
     try:
-        title = product_soup.find('h1',class_="productCard__title").text.strip()
+        title = product_soup.find('h1',class_="productCard__title").text.strip().split('\n')[0]
         match_price = re.search(r'£\d+\.\d{2}',product_soup.find('button',class_="productActions__addToCart button add-to-cart add").text.strip())
         price = match_price.group(0) if match_price else None
         weight = product_soup.find('p',class_="productCard__weight").text.strip()
@@ -22,7 +23,7 @@ def scrape_product_data(product_url):
         try:
             variant = product_soup.find('p',class_="linkedProducts__title").text.strip()
         except Exception as e:
-            print(f"varaint doesn't exist, error: {e}")
+            print(f"No variants for this product, error: {e}")
             variant=None
     except Exception as e:
         print(f"Error parsing product details for URL: {product_url}, error: {e}")
@@ -49,32 +50,19 @@ def scrape_types(baseurl,types_data):
         products =type_soup.find_all('div',class_='productMiniature js-product-miniature') + type_soup.find_all('div',class_='productMiniature js-product-miniature --oos')
         # print(len(products))
         for product in products:
-            product_href = product.find('a').get('href')
-            # print(baseurl,product_href)
-            products_url = [product_href]
+            product_url = product.find('a').get('href')
             try:
-                product_response = requests.get(products_url[0])
+                product_response = requests.get(product_url)
                 product_response.raise_for_status()
             except requests.RequestException as e:
-                print(f"Error fetching product URL: {products_url[0]}, error: {e}")
+                print(f"Error fetching product URL: {product_url[0]}, error: {e}")
                 return 
-            product_soup = BeautifulSoup(product_response.text,'html.parser')
-            # try:
-            #     sub_products = product_soup.find('ul',class_='linkedProducts__list').find_all('a')
-            #     sub_product_urls=[sub_product.get('href') for sub_product in sub_products]
-            # except Exception as e:
-            #     print(f"Error fetching sub urls, error: {e}")
-            #     sub_product_urls=[]
-            sub_product_urls=[]
             print("\n")
-            print(products_url+sub_product_urls)
-            print("\n")
-            for product_url in products_url + sub_product_urls:
-                # print(product_url)
-                product_data = scrape_product_data(product_url)
-                if product_data:
-                    product_data['category'] = each_type_data[0]
-                    products_data.append(product_data)
+            print(product_url)
+            product_data = scrape_product_data(product_url)
+            if product_data:
+                product_data['category'] = each_type_data[0]
+                products_data.append(product_data)
     return products_data
 
 # Function to scrape Le Chocolat Alain Ducasse
@@ -88,5 +76,7 @@ def scrape_lechocolat_alainducasse(baseurl):
             href = each_type['href']
             text = each_type.find('p',class_="homeCategoryPads__line --top").text.strip() + each_type.find('p',class_="homeCategoryPads__line --bottom").text.strip()
             types_data.append([text,href])
+        # HACK: Not found in the main section
+        types_data.append(['gifts','/uk/chocolate-gift'])
         print(types_data)
     return scrape_types(baseurl=baseurl,types_data=types_data)
