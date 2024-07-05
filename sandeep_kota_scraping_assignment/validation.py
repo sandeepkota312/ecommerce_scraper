@@ -1,63 +1,64 @@
 import json
 
 class Validation:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, domain, products):
+        self.domain = domain
+        self.products = products
 
     def validate(self):
         errors = []
         
-        for domain, products in self.data.items():
-            for product in products:
-                product_errors = self.validate_product(product)
-                if product_errors:
-                    errors.append({
-                        "domain": domain,
-                        "product_id": product.get("id", "N/A"),
-                        "errors": product_errors
-                    })
+        for product in self.products:
+            product_errors = self.validate_product(product)
+            if product_errors:
+                errors.append({
+                    "domain": self.domain,
+                    "product_url": product.get("url", "N/A"),
+                    "errors": product_errors
+                })
         
         return errors
 
     def validate_product(self, product):
         errors = []
         
-        # Check mandatory fields
-        mandatory_fields = ["id", "name", "price", "url"]
+        mandatory_fields = ["title", "price", "url","image"]
         for field in mandatory_fields:
             if field not in product or not product[field]:
                 errors.append(f"Mandatory field '{field}' is missing or empty.")
         
-        # Check sale price <= original price
-        if "price" in product and "sale_price" in product:
+        if "price" in product and "actual_price" in product:
             try:
-                price = float(product["price"].replace('$', '').replace(',', ''))
-                sale_price = float(product["sale_price"].replace('$', '').replace(',', ''))
-                if sale_price > price:
-                    errors.append("Sale price is greater than original price.")
+                price = float("".join(filter(str.isdigit,product["price"])))
+                actual_price = float("".join(filter(str.isdigit,product["actual_price"])))
+                if price > actual_price:
+                    errors.append("price is greater than Actual price.")
             except ValueError:
-                errors.append("Price or sale price is not a valid number.")
+                errors.append("Price or Actual price is not a valid number.")
         
-        # Each variant (model) has images and their respective prices
         if "images" not in product or not product["images"]:
             errors.append("Product does not have any images.")
         
         return errors
 
-if __name__ == "__main__":
-    # Load the scraped products data from JSON file
-    input_file_path = "scraped_products.json"
-    with open(input_file_path, "r") as f:
+# input_file_path = "scraped_products.json"
+data_paths = {
+    "foreignfortune": "output/scraped_products_foreignfortune.json",
+    "lechocolat_alainducasse": "output/scraped_products_lechocolat_alainducasse.json",
+    # "traderjoes": "output/scraped_products_traderjoes.json"
+}
+validation_errors = []
+for domain in data_paths:
+    with open(data_paths[domain], "r") as f:
         data = json.load(f)
-    
-    # Validate the data
-    validator = Validation(data)
-    validation_errors = validator.validate()
 
-    # Print the validation errors
-    if validation_errors:
-        print("Validation errors found:")
-        for error in validation_errors:
-            print(f"Domain: {error['domain']}, Product ID: {error['product_id']}, Errors: {', '.join(error['errors'])}")
-    else:
-        print("All products passed validation.")
+    validator = Validation(domain=domain,products=data)
+    validation_errors += validator.validate()
+
+if validation_errors:
+    print("Validation errors found:")
+    for error in validation_errors:
+        print(f"Domain: {error['domain']}, Product Url: {error['product_url']}, Errors: {', '.join(error['errors'])}")
+        print("\n")
+else:
+    print("All products passed validation.")

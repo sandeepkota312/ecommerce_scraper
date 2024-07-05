@@ -15,11 +15,13 @@ def scrape_product_data(product_url):
     try:
         title = product_soup.find('h1',class_="productCard__title").text.strip().split('\n')[0]
         match_price = re.search(r'£\d+\.\d{2}',product_soup.find('button',class_="productActions__addToCart button add-to-cart add").text.strip())
-        price = match_price.group(0) if match_price else None
+        current_price = original_price = match_price.group(0) if match_price else None
         weight = product_soup.find('p',class_="productCard__weight").text.strip()
         description = product_soup.find('div',class_="productDescription__text wysiwyg-content product-description").text.strip()
         images = product_soup.find('ul',class_="productImages__list js-product-images-carousel keen-slider js-product-images-list").find_all('li',class_="productImages__item keen-slider__slide")
         product_images = [image.find('a').get('href') for image in images]
+        if product_images:
+            image = product_images[0]
         try:
             variant = product_soup.find('p',class_="linkedProducts__title").text.strip()
         except Exception as e:
@@ -32,7 +34,9 @@ def scrape_product_data(product_url):
     product_data={
         "title":title,
         "url":product_url,
-        "price":price,
+        "price":current_price,
+        "actual_price":original_price,
+        "image": image,
         "images":product_images,
         "description":description,
         "weight":weight,

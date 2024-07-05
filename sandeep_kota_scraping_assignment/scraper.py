@@ -29,9 +29,9 @@ urls = {
 # print(f"Scraped product details have been saved to {output_file_path}")
 
 traderjoes_products = scrape_traderjoes(baseurl=urls['traderjoes'],href="/home/products/category/products-2")
-# # Save the scraped data to a JSON file
-# output_file_path = f"output/scraped_products_traderjoes.json"
-# with open(output_file_path, "w") as f:
-#     json.dump(traderjoes_products, f, indent=4)
+# Save the scraped data to a JSON file
+output_file_path = f"output/scraped_products_traderjoes.json"
+with open(output_file_path, "w") as f:
+    json.dump(traderjoes_products, f, indent=4)
 
-# print(f"Scraped product details have been saved to {output_file_path}")
+print(f"Scraped product details have been saved to {output_file_path}")

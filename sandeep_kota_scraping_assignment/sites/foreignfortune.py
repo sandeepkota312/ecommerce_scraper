@@ -2,7 +2,6 @@ import requests
 import math
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-import json
 
 # TODO: need to add sleep for every request
 def scrape_product_data(product_url):
@@ -25,6 +24,8 @@ def scrape_product_data(product_url):
         images = product_soup.find('ul', class_="grid grid--uniform product-single__thumbnails product-single__thumbnails-product-template").find_all('img')
 
         product_images = ["https:" + image.get('src') for image in images]
+        if product_images:
+            product_images.append(main_image)
     except:
         try:
             main_image = "https:"+product_soup.find('div', class_="product-single__photo js-zoom-enabled").get('data-zoom')
