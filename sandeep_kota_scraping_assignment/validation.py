@@ -39,9 +39,11 @@ class Validation:
         if "images" not in product or not product["images"]:
             errors.append("Product does not have any images.")
         
+        if "description" not in product or not product["description"]:
+            errors.append("Product does not have description")
+        
         return errors
 
-# input_file_path = "scraped_products.json"
 data_paths = {
     "foreignfortune": "output/scraped_products_foreignfortune.json",
     "lechocolat_alainducasse": "output/scraped_products_lechocolat_alainducasse.json",

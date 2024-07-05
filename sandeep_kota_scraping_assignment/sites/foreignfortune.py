@@ -24,12 +24,12 @@ def scrape_product_data(product_url):
         images = product_soup.find('ul', class_="grid grid--uniform product-single__thumbnails product-single__thumbnails-product-template").find_all('img')
 
         product_images = ["https:" + image.get('src') for image in images]
-        if product_images:
+        if product_images == []:
             product_images.append(main_image)
     except:
         try:
             main_image = "https:"+product_soup.find('div', class_="product-single__photo js-zoom-enabled").get('data-zoom')
-            product_images=[]
+            product_images=[main_image]
         except AttributeError as e:
             print(f"Error parsing product details for URL: {product_url}, error: {e}")
             return None
