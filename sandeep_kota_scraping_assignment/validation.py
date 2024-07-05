@@ -47,7 +47,7 @@ class Validation:
 data_paths = {
     "foreignfortune": "output/scraped_products_foreignfortune.json",
     "lechocolat_alainducasse": "output/scraped_products_lechocolat_alainducasse.json",
-    # "traderjoes": "output/scraped_products_traderjoes.json"
+    "traderjoes": "output/scraped_products_traderjoes.json"
 }
 validation_errors = []
 for domain in data_paths:
@@ -58,7 +58,7 @@ for domain in data_paths:
     validation_errors += validator.validate()
 
 if validation_errors:
-    print("Validation errors found:")
+    print(f"{len(validation_errors)} Validation errors found:")
     for error in validation_errors:
         print(f"Domain: {error['domain']}, Product Url: {error['product_url']}, Errors: {', '.join(error['errors'])}")
         print("\n")
