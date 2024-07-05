@@ -2,11 +2,12 @@ import requests
 import math
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import time
 
-# TODO: need to add sleep for every request
 def scrape_product_data(product_url):
     try:
         product_response = requests.get(product_url)
+        time.sleep(1)
         product_response.raise_for_status()
     except requests.RequestException as e:
         print(f"Error fetching product URL: {product_url}, error: {e}")
@@ -72,6 +73,7 @@ def scrape_sections(baseurl, sections_data):
         main_url = baseurl + each_section_data[-1]
         try:
             section_response = requests.get(main_url)
+            time.sleep(1)
             section_response.raise_for_status()
         except requests.RequestException as e:
             print(f"Error fetching section URL: {main_url}, error: {e}")
@@ -90,6 +92,7 @@ def scrape_sections(baseurl, sections_data):
         for page in range(1, total_pages + 1):
             try:
                 page_response = requests.get(f"{main_url}?page={page}")
+                time.sleep(1)
                 page_response.raise_for_status()
             except requests.RequestException as e:
                 print(f"Error fetching page URL: {main_url}?page={page}, error: {e}")
@@ -117,6 +120,7 @@ def scrape_sections(baseurl, sections_data):
 def scrape_foreignfortune(baseurl):
     try:
         response = requests.get(baseurl)
+        time.sleep(1)
         response.raise_for_status()
     except requests.RequestException as e:
         print(f"Error fetching base URL: {baseurl}, error: {e}")

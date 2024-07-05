@@ -1,11 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-# TODO: need to add sleep for every request
+import time
 
 def scrape_product_data(product_url):
     try:
         product_response = requests.get(product_url)
+        time.sleep(1)
         product_response.raise_for_status()
     except requests.RequestException as e:
         print(f"Error fetching product URL: {product_url}, error: {e}")
@@ -50,6 +51,7 @@ def scrape_types(baseurl,types_data):
     for each_type_data in types_data:
         main_url = baseurl + each_type_data[-1]
         type_response = requests.get(main_url)
+        time.sleep(1)
         type_soup = BeautifulSoup(type_response.text,'html.parser')
         products =type_soup.find_all('div',class_='productMiniature js-product-miniature') + type_soup.find_all('div',class_='productMiniature js-product-miniature --oos')
         # print(len(products))
@@ -57,6 +59,7 @@ def scrape_types(baseurl,types_data):
             product_url = product.find('a').get('href')
             try:
                 product_response = requests.get(product_url)
+                time.sleep(1)
                 product_response.raise_for_status()
             except requests.RequestException as e:
                 print(f"Error fetching product URL: {product_url[0]}, error: {e}")
@@ -72,6 +75,7 @@ def scrape_types(baseurl,types_data):
 # Function to scrape Le Chocolat Alain Ducasse
 def scrape_lechocolat_alainducasse(baseurl):
     response = requests.get(baseurl+"/uk/")
+    time.sleep(1)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         types = soup.find('ul',class_="homeCategoryPads__list").find_all('a',class_="homeCategoryPads__itemLink")
